@@ -94,7 +94,7 @@ def send_welcome(message):
     markup = types.InlineKeyboardMarkup()
     btn_app = types.InlineKeyboardButton(
         text="🔥 ابدأ الربح الآن", 
-        web_app=types.WebAppInfo(url=f"https://ضع_رابط_نتليفاي_الجديد_هنا.netlify.app/?user_id={user_id}&balance={balance}&refs={referrals}") 
+        web_app=types.WebAppInfo(url=f"https://zideot-usdt-app.netlify.app/?user_id={user_id}&balance={balance}&refs={referrals}") 
     )
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")

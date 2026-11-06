@@ -1,8 +1,8 @@
 import telebot
 from telebot import types
 import os
-import psycopg2
-from psycopg2.extras import DictCursor
+import psycopg
+from psycopg.rows import dict_row
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
@@ -21,7 +21,7 @@ except Exception as e:
     print("Error setting commands:", e)
 
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL, sslmode='require')
+    return psycopg.connect(DATABASE_URL, sslmode='require')
 
 def init_db():
     conn = get_db_connection()
@@ -38,7 +38,7 @@ init_db()
 
 def get_user(user_id):
     conn = get_db_connection()
-    c = conn.cursor(cursor_factory=DictCursor)
+    c = conn.cursor(row_factory=dict_row)
     c.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
     user = c.fetchone()
     c.close()

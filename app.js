@@ -21,7 +21,7 @@ window.addEventListener('load', function() {
     async function fetchBalanceFromServer() {
         if (!userId) return;
         try {
-            const response = await fetch(`https://zideot-tron.onrender.com/api/get_user/${userId}`);
+            const response = await fetch(`https://zideot-usdt-2.onrender.com/api/get_user/${userId}`);
             const data = await response.json();
             if (data.status === 'success') {
                 currentBalance = data.balance;
@@ -62,7 +62,7 @@ window.addEventListener('load', function() {
             } else {
                 const wallet = prompt("💳 يرجى إدخال عنوان محفظة USDT (TRC20 أو ERC20) الخاصة بك:");
                 if (wallet && wallet.length > 20) {
-                    fetch('https://zideot-tron.onrender.com/api/withdraw', {
+                    fetch('https://zideot-usdt-2.onrender.com/api/withdraw', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, wallet: wallet })
@@ -97,7 +97,7 @@ window.addEventListener('load', function() {
                     if(statusMessage) statusMessage.innerText = `🎉 مبروك! تمت الإضافة.`;
                     watchAdBtn.disabled = false;
 
-                    fetch('https://zideot-tron.onrender.com/api/add_points', {
+                    fetch('https://zideot-usdt-2.onrender.com/api/add_points', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ user_id: userId, amount: REWARD_AMOUNT })

@@ -2,7 +2,7 @@ window.addEventListener('load', function() {
     const tg = window.Telegram?.WebApp;
     if (tg) tg.expand();
 
-    const BLOCK_ID = "int-58356"; 
+    const BLOCK_ID = "58386"; 
     const urlParams = new URLSearchParams(window.location.search);
     let userId = tg?.initDataUnsafe?.user?.id || urlParams.get('user_id');
     

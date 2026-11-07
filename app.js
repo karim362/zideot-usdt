@@ -9,7 +9,7 @@ window.addEventListener('load', function() {
     let currentBalance = parseFloat(urlParams.get('balance') || 0.0000000);
     let refsCount = parseInt(urlParams.get('refs') || 0);
     
-    const REWARD_AMOUNT = 0.01;
+    const REWARD_AMOUNT = 0.1;
 
     function updateUI() {
         const balanceEl = document.getElementById('balance');
@@ -45,7 +45,7 @@ window.addEventListener('load', function() {
         showRefsBtn.addEventListener('click', () => {
             tg.showPopup({
                 title: 'إحالاتي 👥',
-                message: `عدد إحالاتك: ${refsCount}\n\nكل 100 إحالة = 1.0000000 USDT`,
+                message: `عدد إحالاتك: ${refsCount}\n\nكل 10 إحالات = 1.0000000 USDT`,
                 buttons: [{type: 'ok'}]
             });
         });

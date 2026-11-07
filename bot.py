@@ -68,7 +68,7 @@ def add_referral(referrer_id):
     c.execute("SELECT referrals FROM users WHERE user_id = %s", (referrer_id,))
     result = c.fetchone()
     if result:
-        c.execute("UPDATE users SET balance = balance + 0.01 WHERE user_id = %s", (referrer_id,))
+        c.execute("UPDATE users SET balance = balance + 0.1 WHERE user_id = %s", (referrer_id,))
     conn.commit()
     c.close()
     conn.close()
@@ -102,7 +102,7 @@ def send_welcome(message):
     
     bot_info = bot.get_me()
     ref_link = f"https://t.me/{bot_info.username}?start={user_id}"
-    share_text = urllib.parse.quote("🔥 انضم إليّ في Zideot USDT واربح عملة USDT مجاناً من مشاهدة الإعلانات! اضغط هنا:")
+    share_text = "%F0%9F%9B%91%20%D8%AA%D9%88%D9%82%D9%81%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%AA%D9%85%D8%B1%D9%8A%D8%B1%21%20%D9%87%D8%B0%D8%A7%20%D8%A7%D9%84%D8%A8%D9%88%D8%AA%20%D8%B3%D9%8A%D8%BA%D9%8A%D8%B1%20%D8%AD%D9%8A%D8%A7%D8%AA%D9%83%20%D8%A7%D9%84%D9%85%D8%A7%D9%84%D9%8A%D8%A9...%20%F0%9F%A4%AF%5Cn%5Cn%F0%9F%92%B8%20%D9%87%D9%84%20%D8%AA%D8%AA%D8%AE%D9%8A%D9%84%20%D8%AA%D8%AD%D9%88%D9%8A%D9%84%20%D9%88%D9%82%D8%AA%D9%83%20%D8%A7%D9%84%D8%B6%D8%A7%D8%A6%D8%B9%20%D8%A5%D9%84%D9%89%20%D8%AF%D9%88%D9%84%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%AD%D9%82%D9%8A%D9%82%D9%8A%D8%A9%20%28USDT%29%20%D8%A8%D8%AF%D9%88%D9%86%20%D8%A3%D9%8A%20%D8%B1%D8%A3%D8%B3%20%D9%85%D8%A7%D9%84%D8%9F%5Cn%F0%9F%94%A5%20%D8%A3%D9%86%D8%A7%20%D9%84%D9%84%D8%AA%D9%88%20%D8%A8%D8%AF%D8%A3%D8%AA%20%D8%A3%D8%B3%D8%AD%D8%A8%20%D8%A3%D8%B1%D8%A8%D8%A7%D8%AD%D9%8A%21%20%D8%A7%D9%84%D8%B7%D8%B1%D9%8A%D9%82%D8%A9%20%D8%B3%D9%87%D9%84%D8%A9%20%D8%AC%D8%AF%D8%A7%D9%8B%20%D9%88%D8%B3%D8%B1%D9%8A%D8%B9%D8%A9.%5Cn%5Cn%F0%9F%91%87%20%D8%A7%D8%B6%D8%BA%D8%B7%20%D8%B9%D9%84%D9%89%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%20%D8%A7%D9%84%D8%A2%D9%86%20%D9%82%D8%A8%D9%84%20%D8%A3%D9%86%20%D9%8A%D8%AA%D9%85%20%D8%A5%D8%BA%D9%84%D8%A7%D9%82%20%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%3A"
     btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", url=f"https://t.me/share/url?url={ref_link}&text={share_text}")
     
     markup.add(btn_app)
@@ -113,8 +113,8 @@ def send_welcome(message):
         f"🔥 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟!** 💸\n\n"
         f"🚀 **مرحباً بك في Zideot USDT** - منصتك الأولى لربح عملة USDT مجاناً!\n\n"
         f"⚡️ **نظام الأرباح السريع:**\n"
-        f"👈 كل 100 إعلان = 1.0000000 USDT\n"
-        f"👈 كل إحالة (دعوة صديق) = 0.0100000 USDT\n"
+        f"👈 كل 10 إعلانات = 1.0000000 USDT\n"
+        f"👈 كل 10 إحالات (دعوة أصدقاء) = 1.0000000 USDT\n"
         f"💳 **الحد الأدنى للسحب:** 10.0000000 USDT\n\n"
         f"👇 **اضغط على الزر أدناه وابدأ الربح الآن!**"
     )
@@ -134,7 +134,7 @@ def callback_refs(call):
     bot.answer_callback_query(call.id)
     text = (
         f"👥 **عدد إحالاتك:** `{refs}`\n\n"
-        f"💰 **مكافأة الإحالة:** `0.0100000 USDT` لكل شخص.\n"
+        f"💰 **مكافأة الإحالة:** `0.1000000 USDT` لكل شخص.\n"
         f"*(تتم إضافتها تلقائياً لرصيدك بمجرد دخول صديقك من رابطك)*"
     )
     bot.send_message(call.message.chat.id, text, parse_mode='Markdown')

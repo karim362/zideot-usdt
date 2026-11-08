@@ -99,9 +99,7 @@ def send_welcome(message):
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    btn_share = types.InlineKeyboardButton(
-        text="🎁 دعوة أصدقائك", 
-        url=f"https://t.me/share/url?url=https://t.me/{bot_info.username}?start={user_id}&text=🔥🔥%20اكتشاف%20جديد%20في%20عالم%20الكريبتو!%20🔥🔥%0A%0A💰%20هل%20أنت%20مستعد%20لتحويل%20وقتك%20إلى%20أرباح%20حقيقية؟%0A🚀%20Zideot%20USDT%20هي%20منصتك%20الأولى%20لربح%20عملة%20USDT%20مجاناً!%0A%0A❓%20كيف%20تبدأ؟%0A1️⃣%20اضغط%20على%20الرابط%20بالأسفل.%0A2️⃣%20شاهد%20إعلانات%20قصيرة%20(ثواني%20معدودة).%0A3️⃣%20اجمع%20النقاط%20وحولها%20لدولارات%20حقيقية.%0A%0A🎁%20نظام%20المكافآت:%0A⚡️%20كل%2010%20إعلانات%20=%201%20USDT%0A👥%20كل%2010%20إحالات%20=%201%20USDT%0A💳%20الحد%20الأدنى%20للسحب:%2010%20USDT%20فقط!%0A%0A⏳%20لا%20تفوت%20الفرصة!%0A👇%20اضغط%20هنا%20وابدأ%20الربح%20الآن:"
+    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", callback_data="invite_friends").%0A3️⃣%20اجمع%20النقاط%20وحولها%20لدولارات%20حقيقية.%0A%0A🎁%20نظام%20المكافآت:%0A⚡️%20كل%2010%20إعلانات%20=%201%20USDT%0A👥%20كل%2010%20إحالات%20=%201%20USDT%0A💳%20الحد%20الأدنى%20للسحب:%2010%20USDT%20فقط!%0A%0A⏳%20لا%20تفوت%20الفرصة!%0A👇%20اضغط%20هنا%20وابدأ%20الربح%20الآن:"
     )
     
     markup.add(btn_app)

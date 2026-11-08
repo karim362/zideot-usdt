@@ -222,10 +222,21 @@ def api_withdraw():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-def run_polling():
-    bot.infinity_polling()
+# ===== إعداد Webhook =====
+WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
-threading.Thread(target=run_polling, daemon=True).start()
+@app.route('/' + BOT_TOKEN, methods=['POST'])
+def getMessage():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!", 200
+
+@app.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url=WEBHOOK_URL + '/' + BOT_TOKEN)
+    return "Webhook is set and running perfectly!", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))

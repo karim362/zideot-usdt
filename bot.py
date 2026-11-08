@@ -2,6 +2,7 @@ import telebot
 from telebot import types
 import os
 import psycopg
+from urllib.parse import quote
 from psycopg.rows import dict_row
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -99,9 +100,8 @@ def send_welcome(message):
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", callback_data="invite_friends").%0A3️⃣%20اجمع%20النقاط%20وحولها%20لدولارات%20حقيقية.%0A%0A🎁%20نظام%20المكافآت:%0A⚡️%20كل%2010%20إعلانات%20=%201%20USDT%0A👥%20كل%2010%20إحالات%20=%201%20USDT%0A💳%20الحد%20الأدنى%20للسحب:%2010%20USDT%20فقط!%0A%0A⏳%20لا%20تفوت%20الفرصة!%0A👇%20اضغط%20هنا%20وابدأ%20الربح%20الآن:"
-    )
-    
+    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", callback_data="invite_friends")
+
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)
     markup.add(btn_withdraw, btn_share)
@@ -120,6 +120,34 @@ def send_welcome(message):
 @bot.message_handler(commands=['ping'])
 def ping_test(message):
     bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
+
+@bot.callback_query_handler(func=lambda call: call.data == "invite_friends")
+def callback_invite_friends(call):
+    bot.answer_callback_query(call.id)
+    user_id = call.from_user.id
+    bot_info = bot.get_me()
+    ref_link = f"https://t.me/{bot_info.username}?start={user_id}"
+    share_text = (
+        "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
+        "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
+        "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
+        "❓ **كيف تبدأ؟**\n"
+        "1️⃣ اضغط على الرابط بالأسفل.\n"
+        "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
+        "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
+        "🎁 **نظام المكافآت:**\n"
+        "⚡️ كل 10 إعلانات = **1 USDT**\n"
+        "👥 كل 10 إحالات = **1 USDT**\n"
+        "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
+        "⏳ **لا تفوت الفرصة!**\n\n"
+        "👇 **اضغط هنا وابدأ الربح الآن:**\n"
+        f"{ref_link}"
+    )
+    markup = types.InlineKeyboardMarkup()
+    share_url = "https://t.me/share/url?url=" + quote(ref_link, safe='') + "&text=" + quote(share_text, safe='')
+    markup.add(types.InlineKeyboardButton("📤 مشاركة", url=share_url))
+    markup.add(types.InlineKeyboardButton("🔗 رابط الدعوة", url=ref_link))
+    bot.send_message(call.message.chat.id, share_text, parse_mode='Markdown', reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_balance")
 def callback_balance(call):
@@ -146,7 +174,7 @@ def callback_withdraw(call):
     balance = user['balance'] if user else 0.0
     if balance < 10.0:
         bot.answer_callback_query(call.id)
-        bot.send_message(call.message.chat.id, f"⚠️ **عذراً، رصيدك غير كافٍ للسحب.**\n\nالحد الأدنى للسحب: `10.0000000 USDT`\nرصيدك الحالي: `{balance:.7f} USDT`\n\nاستمر في جمع النقاط!", parse_mode='Markdown')
+        bot.send_message(call.message.chat.id, f"⚠️ **عذراً، رصيدك غير كافٍ للسحب.**\n\nالحد الأدنى للسحب: `10.0000000 USDT`\nرصيدك الحالي: `{balance:.7f} USDT`", parse_mode='Markdown')
     else:
         bot.answer_callback_query(call.id)
         msg = bot.send_message(call.message.chat.id, "💳 **يرجى إرسال عنوان محفظة USDT (TRC20) الخاصة بك الآن:**")
@@ -157,7 +185,7 @@ def process_withdraw(message):
     if len(wallet) < 20:
         bot.send_message(message.chat.id, "⚠️ عنوان المحفظة غير صحيح. يرجى المحاولة مرة أخرى من البداية.")
         return
-    
+
     user_id = message.from_user.id
     conn = get_db_connection()
     c = conn.cursor()
@@ -167,11 +195,11 @@ def process_withdraw(message):
     conn.close()
 
     bot.send_message(
-        message.chat.id, 
+        message.chat.id,
         f"✅ **تم استلام طلب السحب بنجاح!**\n\n"
         f"💸 المبلغ: `10.0000000 USDT`\n"
         f"💳 المحفظة: `{wallet}`\n\n"
-        f"⏳ سيتم تحويل المبلغ في غضون بضع ساعات. شكراً لك!", 
+        f"⏳ سيتم تحويل المبلغ في غضون بضع ساعات. شكراً لك!",
         parse_mode='Markdown'
     )
 
@@ -180,7 +208,7 @@ def query_text(inline_query):
     try:
         bot_info = bot.get_me()
         ref_link = f"https://t.me/{bot_info.username}?start={inline_query.from_user.id}"
-        
+
         magic_text = (
             "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
             "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
@@ -255,7 +283,7 @@ def api_withdraw():
         conn.commit()
         c.close()
         conn.close()
-        text = f"✅ **تم استلام طلب السحب بنجاح!**\n\n💸 المبلغ: `10.0000000 USDT`\n💳 المحفظة: `{wallet}`\n\n⏳ سيتم تحويل المبلغ في غضون بضع ساعات."
+        text = f"✅ **تم استلام طلب السحب بنجاح!**\n\n💸 المبلغ: `10.0000000 USDT`\n💳 المحفظة: `{wallet}`\n\n⏳ سيتم تحويل المبلغ في غضون بضع ساعات. شكراً لك!"
         bot.send_message(user_id, text, parse_mode='Markdown')
         return jsonify({"status": "success", "message": "تم السحب"}), 200
     except Exception as e:
@@ -263,29 +291,22 @@ def api_withdraw():
 
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
-
-
 @app.route('/set_webhook')
 def set_webhook_route():
     bot.remove_webhook()
     bot.set_webhook(url=f"{WEBHOOK_URL}/webhook")
     return f"Webhook set to {WEBHOOK_URL}/webhook", 200
 
-
-
-
-
 @app.route('/webhook', methods=['POST'])
 def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
-        
+
         print(f"\n[WEBHOOK] Received: {json_string[:100]}...")
-        
-        # تمرير التحديث للبوت بطريقة رسمية
+
         bot.process_new_updates([update])
-        
+
         return "!", 200
     except Exception as e:
         import traceback

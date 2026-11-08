@@ -263,22 +263,37 @@ def api_withdraw():
 
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
-@app.route('/webhook', methods=['POST'])
-def getMessage():
-    try:
-        json_string = request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
-        bot.process_new_updates([update])
-        return "!", 200
-    except Exception as e:
-        print(f"WEBHOOK ERROR: {e}")
-        return "Error", 500
+
 
 @app.route('/set_webhook')
 def set_webhook_route():
     bot.remove_webhook()
     bot.set_webhook(url=f"{WEBHOOK_URL}/webhook")
     return f"Webhook set to {WEBHOOK_URL}/webhook", 200
+
+
+@app.route('/webhook', methods=['POST'])
+def getMessage():
+    try:
+        json_string = request.get_data().decode('utf-8')
+        update = telebot.types.Update.de_json(json_string)
+        
+        # التأكد إن الرسالة فيها نص
+        if update.message and update.message.text:
+            print(f"\n[RECEIVED] الرسالة: {update.message.text} من {update.message.from_user.id}")
+            
+            # معالجة الرسالة مباشرة
+            if update.message.text == '/start':
+                send_welcome(update.message)
+            elif update.message.text == '/ping':
+                ping_test(update.message)
+            else:
+                print(f"[INFO] رسالة غير معروفة: {update.message.text}")
+        
+        return "!", 200
+    except Exception as e:
+        print(f"WEBHOOK ERROR: {e}")
+        return "Error", 500
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))

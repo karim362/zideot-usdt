@@ -268,6 +268,17 @@ def query_text(inline_query):
 def test_route():
     return "✅ Render updated successfully! Webhook route is ready."
 
+
+# ===== أمر اختبار البوت =====
+@bot.message_handler(commands=['ping'])
+def ping_test(message):
+    print(f"\n[!] تم استلام رسالة /ping من: {message.from_user.id}")
+    bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
+
+@bot.message_handler(func=lambda message: True)
+def debug_all(message):
+    print(f"\n[!] رسالة جديدة: {message.text} من {message.from_user.id}")
+
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 

@@ -23,8 +23,6 @@ def spy_on_requests():
     if request.path == '/webhook' and request.method == 'POST':
         print("\n" + "="*40)
         print("🚨 [SPY] تيليجرام بعتت طلب جديد!")
-        print(f"🔗 المسار: {request.path}")
-        print(f"📦 البيانات الخام: {request.get_data()[:300]}...") # بنطبع أول 300 حرف
         print("="*40 + "\n")
 
 CORS(app)
@@ -280,8 +278,6 @@ def query_text(inline_query):
         )
         bot.answer_inline_query(inline_query.id, [result], cache_time=1)
     except Exception as e:
-        print(f"Inline Error: {e}")
-
 
 @app.route('/test')
 def test_route():
@@ -291,18 +287,8 @@ def test_route():
 # ===== أمر اختبار البوت =====
 @bot.message_handler(commands=['ping'])
 def ping_test(message):
-    print(f"\n[!] تم استلام /ping من: {message.from_user.id}")
-    try:
-        print(f"[!] جاري إرسال الرد...")
-        bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
-        print(f"[!] ✅ تم إرسال الرد بنجاح!")
-    except Exception as e:
-        print(f"[!] ❌ فشل إرسال الرد: {e}")
-
 @bot.message_handler(func=lambda message: True)
 def debug_all(message):
-    print(f"\n[!] رسالة جديدة: {message.text} من {message.from_user.id}")
-
 
 @bot.callback_query_handler(func=lambda call: call.data == "test_ping")
 def callback_test_ping(call):
@@ -331,14 +317,8 @@ def getMessage():
         print(f"
 [FINAL DEBUG] Received update:")
         if update.message:
-            print(f"  - Chat ID: {update.message.chat.id}")
-            print(f"  - Text: {update.message.text}")
-            print(f"  - Content Type: {update.message.content_type}")
-        
         # تمرير التحديث للبوت
         bot.process_new_updates([update])
-        print(f"[FINAL DEBUG] ✅ Update processed successfully")
-        
         return "!", 200
     except Exception as e:
         import traceback

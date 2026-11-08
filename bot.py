@@ -16,7 +16,10 @@ app = Flask(__name__)
 CORS(app)
 
 try:
-    bot.set_my_commands([types.BotCommand("/start", "القائمة الرئيسية 🏠")])
+    bot.set_my_commands([
+        types.BotCommand("/start", "القائمة الرئيسية 🏠"),
+        types.BotCommand("/ping", "اختبار اتصال البوت 🏓")
+    ])
 except Exception as e:
     print("Error setting commands:", e)
 
@@ -108,6 +111,8 @@ def send_welcome(message):
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)
     markup.add(btn_withdraw, btn_share)
+    btn_test = types.InlineKeyboardButton("🏓 اختبار الاتصال", callback_data="test_ping")
+    markup.add(btn_test)
 
     welcome_text = (
         f"🔥 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟!** 💸\n\n"
@@ -278,6 +283,11 @@ def ping_test(message):
 @bot.message_handler(func=lambda message: True)
 def debug_all(message):
     print(f"\n[!] رسالة جديدة: {message.text} من {message.from_user.id}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "test_ping")
+def callback_test_ping(call):
+    bot.answer_callback_query(call.id, "🏓 البوت شغال والاتصال سليم 100%!", show_alert=True)
 
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')

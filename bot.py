@@ -5,8 +5,6 @@ import psycopg
 from psycopg.rows import dict_row
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import threading
-import urllib.parse
 
 BOT_TOKEN = os.environ.get('BOT_TOKEN', '9009396106:AAFNaCQLDqU4jaKoRiq-FCnWvXY8ABNbkrc')
 DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -21,7 +19,7 @@ try:
         types.BotCommand("/ping", "اختبار اتصال البوت 🏓")
     ])
 except Exception as e:
-    print("Error setting commands:", e)
+    print(f"Error setting commands: {e}")
 
 def get_db_connection():
     return psycopg.connect(DATABASE_URL, sslmode='require')

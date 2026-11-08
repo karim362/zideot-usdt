@@ -274,7 +274,8 @@ def getMessage():
     return "!", 200
 
 @app.route("/")
-def webhook():
+def webhook_root():
+    # تعيين الويب هوك عند زيارة الصفحة الرئيسية
     bot.remove_webhook()
     bot.set_webhook(url=WEBHOOK_URL + '/' + BOT_TOKEN)
     return "Webhook is set and running perfectly!", 200

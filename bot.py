@@ -13,6 +13,20 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
+
+import sys
+from flask import request
+
+@app.before_request
+def spy_on_requests():
+    # بنطبع أي طلب جاي من تيليجرام
+    if request.path == '/webhook' and request.method == 'POST':
+        print("\n" + "="*40)
+        print("🚨 [SPY] تيليجرام بعتت طلب جديد!")
+        print(f"🔗 المسار: {request.path}")
+        print(f"📦 البيانات الخام: {request.get_data()[:300]}...") # بنطبع أول 300 حرف
+        print("="*40 + "\n")
+
 CORS(app)
 
 try:
@@ -305,11 +319,20 @@ WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onren
 def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
+        print(f"\n[DEBUG] جاري تحويل البيانات لـ Update...")
         update = telebot.types.Update.de_json(json_string)
+        
+        print(f"[DEBUG] تم قراءة التحديث بنجاح. الرسالة: {update.message.text if update.message else 'لا يوجد نص'}")
+        print(f"[DEBUG] جاري تمرير التحديث للبوت...")
         bot.process_new_updates([update])
+        
+        print(f"[DEBUG] ✅ تم تمرير التحديث بنجاح!")
         return "!", 200
     except Exception as e:
-        print(f"WEBHOOK ERROR: {e}")
+        import traceback
+        print(f"\n❌❌❌ [WEBHOOK ERROR] ❌❌❌")
+        print(f"الخطأ: {e}")
+        traceback.print_exc() # هيطبع مسار الخطأ بالتفصيل
         return "Error", 500
 
 @app.route("/")

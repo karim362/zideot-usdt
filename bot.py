@@ -222,6 +222,47 @@ def api_withdraw():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+# ===== ميزة الإرسال الجماعي للجروبات (Inline Mode) =====
+@bot.inline_handler(lambda query: query.query == '')
+def query_text(inline_query):
+    try:
+        bot_info = bot.get_me()
+        ref_link = f"https://t.me/{bot_info.username}?start={inline_query.from_user.id}"
+        
+        magic_text = (
+            "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
+            "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
+            "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
+            "❓ **كيف تبدأ؟**\n"
+            "1️⃣ اضغط على الرابط بالأسفل.\n"
+            "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
+            "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
+            "🎁 **نظام المكافآت:**\n"
+            "⚡️ كل 10 إعلانات = **1 USDT** (بدون رأس مال!)\n"
+            "👥 كل 10 إحالات = **1 USDT** (أرباح من دعوة أصدقائك)\n"
+            "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
+            "⏳ **لا تفوت الفرصة!** الأماكن محدودة.\n\n"
+            "👇 **اضغط هنا وابدأ الربح الآن:**"
+        )
+
+        # النتيجة اللي هتظهر في الجروبات
+        result = types.InlineQueryResultArticle(
+            id='1',
+            title='🚀 شارك البوت واربح!',
+            description='اضغط هنا لإرسال الرسالة الترويجية في الجروب',
+            input_message_content=types.InputTextMessageContent(
+                message_text=f"{magic_text}\n{ref_link}",
+                parse_mode='Markdown'
+            ),
+            thumb_url='https://cryptologos.cc/logos/tether-usdt-logo.png?v=026',
+            thumb_width=128,
+            thumb_height=128
+        )
+        bot.answer_inline_query(inline_query.id, [result], cache_time=1)
+    except Exception as e:
+        print(f"Inline Error: {e}")
+
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 

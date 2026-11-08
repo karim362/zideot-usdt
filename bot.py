@@ -100,7 +100,7 @@ def send_welcome(message):
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", switch_inline_query="")
+    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", switch_inline_query=" ")
     
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)

@@ -15,8 +15,7 @@ CORS(app)
 
 try:
     bot.set_my_commands([
-        types.BotCommand("/start", "القائمة الرئيسية 🏠"),
-        types.BotCommand("/ping", "اختبار اتصال البوت 🏓")
+        types.BotCommand("/start", "القائمة الرئيسية 🏠")
     ])
 except Exception as e:
     print(f"Error setting commands: {e}")

@@ -292,7 +292,8 @@ def callback_test_ping(call):
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
-@app.route('/' + BOT_TOKEN, methods=['POST'])
+
+@app.route('/webhook', methods=['POST'])
 def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
@@ -304,11 +305,13 @@ def getMessage():
         return "Error", 500
 
 @app.route("/")
-def webhook_root():
-    # تعيين الويب هوك عند زيارة الصفحة الرئيسية
+def webhook():
+    # مسح الويب هوك القديم وتعيين رابط الموقع الجديد
     bot.remove_webhook()
-    bot.set_webhook(url=WEBHOOK_URL + '/' + BOT_TOKEN)
+    # ملاحظة: هنستخدم مسار /webhook بدل التوكن
+    bot.set_webhook(url=f"{WEBHOOK_URL}/webhook")
     return "Webhook is set and running perfectly!", 200
+
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))

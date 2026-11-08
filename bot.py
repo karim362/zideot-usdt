@@ -7,17 +7,18 @@ from psycopg.rows import dict_row
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '9009396106:AAFNaCQLDqU4jaKoRiq-FCnWvXY8ABNbkrc')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN environment variable is required")
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 app = Flask(__name__)
 CORS(app)
 
 try:
-    bot.set_my_commands([
-        types.BotCommand("/start", "القائمة الرئيسية 🏠")
-    ])
+    bot.set_my_commands([types.BotCommand("/start", "القائمة الرئيسية 🏠")])
 except Exception as e:
     print(f"Error setting commands: {e}")
 
@@ -28,8 +29,8 @@ def init_db():
     conn = get_db_connection()
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (
-                 user_id BIGINT PRIMARY KEY, 
-                 balance REAL DEFAULT 0.0, 
+                 user_id BIGINT PRIMARY KEY,
+                 balance REAL DEFAULT 0.0,
                  referrals INTEGER DEFAULT 0,
                  referrer_id BIGINT DEFAULT NULL)''')
     conn.commit()
@@ -84,24 +85,24 @@ def send_welcome(message):
         if len(args) > 1:
             try:
                 referrer_id = int(args[1])
-                if referrer_id != user_id: add_referral(referrer_id)
-            except: pass
+                if referrer_id != user_id:
+                    add_referral(referrer_id)
+            except (TypeError, ValueError):
+                pass
         create_user(user_id, referrer_id)
         user = get_user(user_id)
 
     balance = user['balance'] if user else 0.0
     referrals = user['referrals'] if user else 0
-
     markup = types.InlineKeyboardMarkup()
     btn_app = types.InlineKeyboardButton(
-        text="🔥 ابدأ الربح الآن", 
-        web_app=types.WebAppInfo(url=f"https://zideot-usdt-app.netlify.app/?user_id={user_id}&balance={balance}&refs={referrals}") 
+        text="🔥 ابدأ الربح الآن",
+        web_app=types.WebAppInfo(url=f"https://zideot-usdt-app.netlify.app/?user_id={user_id}&balance={balance}&refs={referrals}")
     )
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", callback_data="invite_friends")
-
+    btn_share = types.InlineKeyboardButton("🎁 دعوة أصدقائك", callback_data="invite_friends")
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)
     markup.add(btn_withdraw, btn_share)
@@ -121,79 +122,105 @@ def send_welcome(message):
 def ping_test(message):
     bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
 
+def answer_callback_safely(call):
+    try:
+        bot.answer_callback_query(call.id)
+    except Exception as e:
+        print(f"Could not acknowledge callback {call.id}: {e}")
+
 @bot.callback_query_handler(func=lambda call: call.data == "invite_friends")
 def callback_invite_friends(call):
-    bot.answer_callback_query(call.id)
-    user_id = call.from_user.id
-    bot_info = bot.get_me()
-    ref_link = f"https://t.me/{bot_info.username}?start={user_id}"
-    share_text = (
-        "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
-        "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
-        "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
-        "❓ **كيف تبدأ؟**\n"
-        "1️⃣ اضغط على الرابط بالأسفل.\n"
-        "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
-        "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
-        "🎁 **نظام المكافآت:**\n"
-        "⚡️ كل 10 إعلانات = **1 USDT**\n"
-        "👥 كل 10 إحالات = **1 USDT**\n"
-        "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
-        "⏳ **لا تفوت الفرصة!**\n\n"
-        "👇 **اضغط هنا وابدأ الربح الآن:**\n"
-        f"{ref_link}"
-    )
-    markup = types.InlineKeyboardMarkup()
-    share_url = "https://t.me/share/url?url=" + quote(ref_link, safe='') + "&text=" + quote(share_text, safe='')
-    markup.add(types.InlineKeyboardButton("📤 مشاركة", url=share_url))
-    markup.add(types.InlineKeyboardButton("🔗 رابط الدعوة", url=ref_link))
-    bot.send_message(call.message.chat.id, share_text, parse_mode='Markdown', reply_markup=markup)
+    answer_callback_safely(call)
+    try:
+        user_id = call.from_user.id
+        bot_info = bot.get_me()
+        ref_link = f"https://t.me/{bot_info.username}?start={user_id}"
+        share_text = (
+            "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
+            "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
+            "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
+            "❓ **كيف تبدأ؟**\n"
+            "1️⃣ اضغط على الرابط بالأسفل.\n"
+            "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
+            "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
+            "🎁 **نظام المكافآت:**\n"
+            "⚡️ كل 10 إعلانات = **1 USDT**\n"
+            "👥 كل 10 إحالات = **1 USDT**\n"
+            "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
+            "⏳ **لا تفوت الفرصة!**\n\n"
+            "👇 **اضغط هنا وابدأ الربح الآن:**\n"
+            f"{ref_link}"
+        )
+        markup = types.InlineKeyboardMarkup()
+        share_url = "https://t.me/share/url?url=" + quote(ref_link, safe='') + "&text=" + quote(share_text, safe='')
+        markup.add(types.InlineKeyboardButton("📤 مشاركة", url=share_url))
+        markup.add(types.InlineKeyboardButton("🔗 رابط الدعوة", url=ref_link))
+        bot.send_message(call.message.chat.id, share_text, parse_mode='Markdown', reply_markup=markup)
+    except Exception as e:
+        print(f"Invite callback error: {e}")
+        bot.send_message(call.message.chat.id, "تعذر إنشاء رابط الدعوة الآن. حاول مرة أخرى لاحقاً.")
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_balance")
 def callback_balance(call):
-    user = get_user(call.from_user.id)
-    balance = user['balance'] if user else 0.0
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, f"💎 **رصيدك الحالي:**\n`{balance:.7f} USDT`", parse_mode='Markdown')
+    answer_callback_safely(call)
+    try:
+        user = get_user(call.from_user.id)
+        balance = user['balance'] if user else 0.0
+        bot.send_message(call.message.chat.id, f"💎 **رصيدك الحالي:**\n`{balance:.7f} USDT`", parse_mode='Markdown')
+    except Exception as e:
+        print(f"Balance callback error: {e}")
+        bot.send_message(call.message.chat.id, "تعذر جلب رصيدك الآن. حاول مرة أخرى لاحقاً.")
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_refs")
 def callback_refs(call):
-    user = get_user(call.from_user.id)
-    refs = user['referrals'] if user else 0
-    bot.answer_callback_query(call.id)
-    text = (
-        f"👥 **عدد إحالاتك:** `{refs}`\n\n"
-        f"💰 **مكافأة الإحالة:** `0.1000000 USDT` لكل شخص.\n"
-        f"*(تتم إضافتها تلقائياً لرصيدك بمجرد دخول صديقك من رابطك)*"
-    )
-    bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
+    answer_callback_safely(call)
+    try:
+        user = get_user(call.from_user.id)
+        refs = user['referrals'] if user else 0
+        text = (
+            f"👥 **عدد إحالاتك:** `{refs}`\n\n"
+            f"💰 **مكافأة الإحالة:** `0.1000000 USDT` لكل شخص.\n"
+            f"*(تتم إضافتها تلقائياً لرصيدك بمجرد دخول صديقك من رابطك)*"
+        )
+        bot.send_message(call.message.chat.id, text, parse_mode='Markdown')
+    except Exception as e:
+        print(f"Referrals callback error: {e}")
+        bot.send_message(call.message.chat.id, "تعذر جلب الإحالات الآن. حاول مرة أخرى لاحقاً.")
 
 @bot.callback_query_handler(func=lambda call: call.data == "withdraw")
 def callback_withdraw(call):
-    user = get_user(call.from_user.id)
-    balance = user['balance'] if user else 0.0
-    if balance < 10.0:
-        bot.answer_callback_query(call.id)
-        bot.send_message(call.message.chat.id, f"⚠️ **عذراً، رصيدك غير كافٍ للسحب.**\n\nالحد الأدنى للسحب: `10.0000000 USDT`\nرصيدك الحالي: `{balance:.7f} USDT`", parse_mode='Markdown')
-    else:
-        bot.answer_callback_query(call.id)
-        msg = bot.send_message(call.message.chat.id, "💳 **يرجى إرسال عنوان محفظة USDT (TRC20) الخاصة بك الآن:**")
-        bot.register_next_step_handler(msg, process_withdraw)
+    answer_callback_safely(call)
+    try:
+        user = get_user(call.from_user.id)
+        balance = user['balance'] if user else 0.0
+        if balance < 10.0:
+            bot.send_message(call.message.chat.id, f"⚠️ **عذراً، رصيدك غير كافٍ للسحب.**\n\nالحد الأدنى للسحب: `10.0000000 USDT`\nرصيدك الحالي: `{balance:.7f} USDT`", parse_mode='Markdown')
+        else:
+            msg = bot.send_message(call.message.chat.id, "💳 **يرجى إرسال عنوان محفظة USDT (TRC20) الخاصة بك الآن:**")
+            bot.register_next_step_handler(msg, process_withdraw)
+    except Exception as e:
+        print(f"Withdraw callback error: {e}")
+        bot.send_message(call.message.chat.id, "تعذر بدء طلب السحب الآن. حاول مرة أخرى لاحقاً.")
 
 def process_withdraw(message):
+    if not message.text:
+        bot.send_message(message.chat.id, "يرجى إرسال عنوان المحفظة كنص.")
+        return
     wallet = message.text.strip()
     if len(wallet) < 20:
         bot.send_message(message.chat.id, "⚠️ عنوان المحفظة غير صحيح. يرجى المحاولة مرة أخرى من البداية.")
         return
-
     user_id = message.from_user.id
     conn = get_db_connection()
     c = conn.cursor()
-    c.execute("UPDATE users SET balance = balance - 10.0 WHERE user_id = %s", (user_id,))
+    c.execute("UPDATE users SET balance = balance - 10.0 WHERE user_id = %s AND balance >= 10.0", (user_id,))
+    updated = c.rowcount
     conn.commit()
     c.close()
     conn.close()
-
+    if not updated:
+        bot.send_message(message.chat.id, "تعذر إتمام السحب: رصيدك أقل من الحد الأدنى.")
+        return
     bot.send_message(
         message.chat.id,
         f"✅ **تم استلام طلب السحب بنجاح!**\n\n"
@@ -208,7 +235,6 @@ def query_text(inline_query):
     try:
         bot_info = bot.get_me()
         ref_link = f"https://t.me/{bot_info.username}?start={inline_query.from_user.id}"
-
         magic_text = (
             "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
             "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
@@ -224,7 +250,6 @@ def query_text(inline_query):
             "⏳ **لا تفوت الفرصة!** الأماكن محدودة.\n\n"
             "👇 **اضغط هنا وابدأ الربح الآن:**"
         )
-
         result = types.InlineQueryResultArticle(
             id='1',
             title='🚀 شارك البوت واربح!',
@@ -302,11 +327,8 @@ def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
-
         print(f"\n[WEBHOOK] Received: {json_string[:100]}...")
-
         bot.process_new_updates([update])
-
         return "!", 200
     except Exception as e:
         import traceback

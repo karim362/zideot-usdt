@@ -9,7 +9,7 @@ from flask_cors import CORS
 BOT_TOKEN = os.environ.get('BOT_TOKEN', '9009396106:AAFNaCQLDqU4jaKoRiq-FCnWvXY8ABNbkrc')
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 app = Flask(__name__)
 CORS(app)
 

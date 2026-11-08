@@ -13,18 +13,6 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
-
-import sys
-from flask import request
-
-@app.before_request
-def spy_on_requests():
-    # بنطبع أي طلب جاي من تيليجرام
-    if request.path == '/webhook' and request.method == 'POST':
-        print("\n" + "="*40)
-        print("🚨 [SPY] تيليجرام بعتت طلب جديد!")
-        print("="*40 + "\n")
-
 CORS(app)
 
 try:
@@ -114,17 +102,11 @@ def send_welcome(message):
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    
-    bot_info = bot.get_me()
-    ref_link = f"{bot_info.username}?start={user_id}"
-    share_text = "%F0%9F%94%A5%F0%9F%94%A5%20%2A%2A%D8%A7%D9%83%D8%AA%D8%B4%D8%A7%D9%81%20%D8%AC%D8%AF%D9%8A%D8%AF%20%D9%81%D9%8A%20%D8%B9%D8%A7%D9%84%D9%85%20%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D8%A8%D8%AA%D9%88%21%2A%2A%20%F0%9F%94%A5%F0%9F%94%A5%0A%0A%F0%9F%92%B0%20%2A%2A%D9%87%D9%84%20%D8%A3%D9%86%D8%AA%20%D9%85%D8%B3%D8%AA%D8%B9%D8%AF%20%D9%84%D8%AA%D8%AD%D9%88%D9%8A%D9%84%20%D9%88%D9%82%D8%AA%D9%83%20%D8%A5%D9%84%D9%89%20%D8%A3%D8%B1%D8%A8%D8%A7%D8%AD%20%D8%AD%D9%82%D9%8A%D9%82%D9%8A%D8%A9%D8%9F%2A%2A%0A%F0%9F%9A%80%20%2A%2AZideot%20USDT%2A%2A%20%D9%87%D9%8A%20%D9%85%D9%86%D8%B5%D8%AA%D9%83%20%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89%20%D9%84%D8%B1%D8%A8%D8%AD%20%D8%B9%D9%85%D9%84%D8%A9%20%2A%2AUSDT%2A%2A%20%D9%85%D8%AC%D8%A7%D9%86%D8%A7%D9%8B%21%0A%0A%E2%9D%93%20%2A%2A%D9%83%D9%8A%D9%81%20%D8%AA%D8%A8%D8%AF%D8%A3%D8%9F%2A%2A%0A1%EF%B8%8F%E2%83%A3%20%D8%A7%D8%B6%D8%BA%D8%B7%20%D8%B9%D9%84%D9%89%20%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%20%D8%A8%D8%A7%D9%84%D8%A3%D8%B3%D9%81%D9%84.%0A2%EF%B8%8F%E2%83%A3%20%D8%B4%D8%A7%D9%87%D8%AF%20%D8%A5%D8%B9%D9%84%D8%A7%D9%86%D8%A7%D8%AA%20%D9%82%D8%B5%D9%8A%D8%B1%D8%A9%20%28%D8%AB%D9%88%D8%A7%D9%86%D9%8A%20%D9%85%D8%B9%D8%AF%D9%88%D8%AF%D8%A9%29.%0A3%EF%B8%8F%E2%83%A3%20%D8%A7%D8%AC%D9%85%D8%B9%20%D8%A7%D9%84%D9%86%D9%82%D8%A7%D8%B7%20%D9%88%D8%AD%D9%88%D9%84%D9%87%D8%A7%20%D9%84%D8%AF%D9%88%D9%84%D8%A7%D8%B1%D8%A7%D8%AA%20%D8%AD%D9%82%D9%8A%D9%82%D9%8A%D8%A9.%0A%0A%F0%9F%8E%81%20%2A%2A%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%81%D8%A2%D8%AA%3A%2A%2A%0A%E2%9A%A1%EF%B8%8F%20%D9%83%D9%84%2010%20%D8%A5%D8%B9%D9%84%D8%A7%D9%86%D8%A7%D8%AA%20%3D%20%2A%2A1%20USDT%2A%2A%20%28%D8%A8%D8%AF%D9%88%D9%86%20%D8%B1%D8%A3%D8%B3%20%D9%85%D8%A7%D9%84%21%29%0A%F0%9F%91%A5%20%D9%83%D9%84%2010%20%D8%A5%D8%AD%D8%A7%D9%84%D8%A7%D8%AA%20%3D%20%2A%2A1%20USDT%2A%2A%20%28%D8%A3%D8%B1%D8%A8%D8%A7%D8%AD%20%D9%85%D9%86%20%D8%AF%D8%B9%D9%88%D8%A9%20%D8%A3%D8%B5%D8%AF%D9%82%D8%A7%D8%A6%D9%83%29%0A%F0%9F%92%B3%20%2A%2A%D8%A7%D9%84%D8%AD%D8%AF%20%D8%A7%D9%84%D8%A3%D8%AF%D9%86%D9%89%20%D9%84%D9%84%D8%B3%D8%AD%D8%A8%3A%2A%2A%2010%20USDT%20%D9%81%D9%82%D8%B7%21%0A%0A%E2%8F%B3%20%2A%2A%D9%84%D8%A7%20%D8%AA%D9%81%D9%88%D8%AA%20%D8%A7%D9%84%D9%81%D8%B1%D8%B5%D8%A9%21%2A%2A%20%D8%A7%D9%84%D8%A3%D9%85%D8%A7%D9%83%D9%86%20%D9%85%D8%AD%D8%AF%D9%88%D8%AF%D8%A9%20%D9%88%D8%A7%D9%84%D9%85%D9%83%D8%A7%D9%81%D8%A2%D8%AA%20%D8%AA%D9%86%D9%81%D8%AF%20%D8%A8%D8%B3%D8%B1%D8%B9%D8%A9.%0A%0A%F0%9F%91%87%20%2A%2A%D8%A7%D8%B6%D8%BA%D8%B7%20%D9%87%D9%86%D8%A7%20%D9%88%D8%A7%D8%A8%D8%AF%D8%A3%20%D8%A7%D9%84%D8%B1%D8%A8%D8%AD%20%D8%A7%D9%84%D8%A2%D9%86%3A%2A%2A"
-    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", url=f"share/url?url={ref_link}&text={share_text}")
+    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", switch_inline_query="")
     
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)
     markup.add(btn_withdraw, btn_share)
-    btn_test = types.InlineKeyboardButton("🏓 اختبار الاتصال", callback_data="test_ping")
-    markup.add(btn_test)
 
     welcome_text = (
         f"🔥 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟!** 💸\n\n"
@@ -136,6 +118,10 @@ def send_welcome(message):
         f"👇 **اضغط على الزر أدناه وابدأ الربح الآن!**"
     )
     bot.send_message(message.chat.id, welcome_text, parse_mode='Markdown', reply_markup=markup)
+
+@bot.message_handler(commands=['ping'])
+def ping_test(message):
+    bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_balance")
 def callback_balance(call):
@@ -191,6 +177,44 @@ def process_withdraw(message):
         parse_mode='Markdown'
     )
 
+@bot.inline_handler(lambda query: query.query == '')
+def query_text(inline_query):
+    try:
+        bot_info = bot.get_me()
+        ref_link = f"https://t.me/{bot_info.username}?start={inline_query.from_user.id}"
+        
+        magic_text = (
+            "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
+            "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
+            "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
+            "❓ **كيف تبدأ؟**\n"
+            "1️⃣ اضغط على الرابط بالأسفل.\n"
+            "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
+            "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
+            "🎁 **نظام المكافآت:**\n"
+            "⚡️ كل 10 إعلانات = **1 USDT** (بدون رأس مال!)\n"
+            "👥 كل 10 إحالات = **1 USDT** (أرباح من دعوة أصدقائك)\n"
+            "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
+            "⏳ **لا تفوت الفرصة!** الأماكن محدودة.\n\n"
+            "👇 **اضغط هنا وابدأ الربح الآن:**"
+        )
+
+        result = types.InlineQueryResultArticle(
+            id='1',
+            title='🚀 شارك البوت واربح!',
+            description='اضغط هنا لإرسال الرسالة الترويجية في الجروب',
+            input_message_content=types.InputTextMessageContent(
+                message_text=f"{magic_text}\n{ref_link}",
+                parse_mode='Markdown'
+            ),
+            thumb_url='https://cryptologos.cc/logos/tether-usdt-logo.png?v=026',
+            thumb_width=128,
+            thumb_height=128
+        )
+        bot.answer_inline_query(inline_query.id, [result], cache_time=1)
+    except Exception as e:
+        print(f"Inline Error: {e}")
+
 @app.route('/')
 def index():
     return "Zideot USDT API is running perfectly!"
@@ -239,103 +263,24 @@ def api_withdraw():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-
-# ===== ميزة الإرسال الجماعي للجروبات (Inline Mode) =====
-@bot.inline_handler(lambda query: query.query == '')
-def query_text(inline_query):
-    try:
-        bot_info = bot.get_me()
-        ref_link = f"https://t.me/{bot_info.username}?start={inline_query.from_user.id}"
-        
-        magic_text = (
-            "🔥🔥 **اكتشاف جديد في عالم الكريبتو!** 🔥🔥\n\n"
-            "💰 **هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟**\n"
-            "🚀 **Zideot USDT** هي منصتك الأولى لربح عملة **USDT** مجاناً!\n\n"
-            "❓ **كيف تبدأ؟**\n"
-            "1️⃣ اضغط على الرابط بالأسفل.\n"
-            "2️⃣ شاهد إعلانات قصيرة (ثواني معدودة).\n"
-            "3️⃣ اجمع النقاط وحولها لدولارات حقيقية.\n\n"
-            "🎁 **نظام المكافآت:**\n"
-            "⚡️ كل 10 إعلانات = **1 USDT** (بدون رأس مال!)\n"
-            "👥 كل 10 إحالات = **1 USDT** (أرباح من دعوة أصدقائك)\n"
-            "💳 **الحد الأدنى للسحب:** 10 USDT فقط!\n\n"
-            "⏳ **لا تفوت الفرصة!** الأماكن محدودة.\n\n"
-            "👇 **اضغط هنا وابدأ الربح الآن:**"
-        )
-
-        # النتيجة اللي هتظهر في الجروبات
-        result = types.InlineQueryResultArticle(
-            id='1',
-            title='🚀 شارك البوت واربح!',
-            description='اضغط هنا لإرسال الرسالة الترويجية في الجروب',
-            input_message_content=types.InputTextMessageContent(
-                message_text=f"{magic_text}\n{ref_link}",
-                parse_mode='Markdown'
-            ),
-            thumb_url='https://cryptologos.cc/logos/tether-usdt-logo.png?v=026',
-            thumb_width=128,
-            thumb_height=128
-        )
-        bot.answer_inline_query(inline_query.id, [result], cache_time=1)
-    except Exception as e:
-
-@app.route('/test')
-def test_route():
-    return "✅ Render updated successfully! Webhook route is ready."
-
-
-# ===== أمر اختبار البوت =====
-@bot.message_handler(commands=['ping'])
-def ping_test(message):
-@bot.message_handler(func=lambda message: True)
-def debug_all(message):
-
-@bot.callback_query_handler(func=lambda call: call.data == "test_ping")
-def callback_test_ping(call):
-    bot.answer_callback_query(call.id, "🏓 البوت شغال والاتصال سليم 100%!", show_alert=True)
-
-
-@app.route('/routes')
-def show_routes():
-    routes = []
-    for rule in app.url_map.iter_rules():
-        routes.append(f"{rule.rule} -> {rule.endpoint}")
-    return "<br>".join(routes)
-
-# ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
-
-
 
 @app.route('/webhook', methods=['POST'])
 def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
-        
-        # طباعة محتوى الرسالة بوضوح
-        print(f"
-[FINAL DEBUG] Received update:")
-        if update.message:
-        # تمرير التحديث للبوت
         bot.process_new_updates([update])
         return "!", 200
     except Exception as e:
-        import traceback
-        print(f"
-❌ [FINAL ERROR] {e}")
-        traceback.print_exc()
+        print(f"WEBHOOK ERROR: {e}")
         return "Error", 500
 
-
-@app.route("/")
-def webhook():
-    # مسح الويب هوك القديم وتعيين رابط الموقع الجديد
+@app.route('/set_webhook')
+def set_webhook_route():
     bot.remove_webhook()
-    # ملاحظة: هنستخدم مسار /webhook بدل التوكن
     bot.set_webhook(url=f"{WEBHOOK_URL}/webhook")
-    return "Webhook is set and running perfectly!", 200
-
+    return f"Webhook set to {WEBHOOK_URL}/webhook", 200
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8080))

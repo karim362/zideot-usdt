@@ -263,6 +263,11 @@ def query_text(inline_query):
     except Exception as e:
         print(f"Inline Error: {e}")
 
+
+@app.route('/test')
+def test_route():
+    return "✅ Render updated successfully! Webhook route is ready."
+
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 

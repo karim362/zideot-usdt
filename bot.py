@@ -100,7 +100,7 @@ def send_welcome(message):
     btn_balance = types.InlineKeyboardButton("💳 رصيدي الحالي", callback_data="check_balance")
     btn_refs = types.InlineKeyboardButton("👥 إحالاتي", callback_data="check_refs")
     btn_withdraw = types.InlineKeyboardButton("💸 سحب الأرباح", callback_data="withdraw")
-    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", switch_inline_query=" ")
+    btn_share = types.InlineKeyboardButton(text="🎁 دعوة أصدقائك", switch_inline_query="🔥🔥 اكتشاف جديد في عالم الكريبتو! 🔥🔥%0A%0A💰 هل أنت مستعد لتحويل وقتك إلى أرباح حقيقية؟%0A🚀 Zideot USDT هي منصتك الأولى لربح عملة USDT مجاناً!%0A%0A❓ كيف تبدأ؟%0A1️⃣ اضغط على الرابط بالأسفل.%0A2️⃣ شاهد إعلانات قصيرة.%0A3️⃣ اجمع النقاط وحولها لدولارات حقيقية.%0A%0A🎁 نظام المكافآت:%0A⚡️ كل 10 إعلانات = 1 USDT%0A👥 كل 10 إحالات = 1 USDT%0A💳 الحد الأدنى للسحب: 10 USDT فقط!%0A%0A⏳ لا تفوت الفرصة!%0A%0A👇 اضغط هنا وابدأ الربح الآن:")
     
     markup.add(btn_app)
     markup.add(btn_balance, btn_refs)

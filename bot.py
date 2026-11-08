@@ -291,8 +291,13 @@ def test_route():
 # ===== أمر اختبار البوت =====
 @bot.message_handler(commands=['ping'])
 def ping_test(message):
-    print(f"\n[!] تم استلام رسالة /ping من: {message.from_user.id}")
-    bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
+    print(f"\n[!] تم استلام /ping من: {message.from_user.id}")
+    try:
+        print(f"[!] جاري إرسال الرد...")
+        bot.reply_to(message, "🏓 البوت شغال والويب هوك متصل بنجاح!")
+        print(f"[!] ✅ تم إرسال الرد بنجاح!")
+    except Exception as e:
+        print(f"[!] ❌ فشل إرسال الرد: {e}")
 
 @bot.message_handler(func=lambda message: True)
 def debug_all(message):

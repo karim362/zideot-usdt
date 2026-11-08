@@ -320,25 +320,33 @@ def show_routes():
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
 
+
 @app.route('/webhook', methods=['POST'])
 def getMessage():
     try:
         json_string = request.get_data().decode('utf-8')
-        print(f"\n[DEBUG] جاري تحويل البيانات لـ Update...")
         update = telebot.types.Update.de_json(json_string)
         
-        print(f"[DEBUG] تم قراءة التحديث بنجاح. الرسالة: {update.message.text if update.message else 'لا يوجد نص'}")
-        print(f"[DEBUG] جاري تمرير التحديث للبوت...")
-        bot.process_new_updates([update])
+        # طباعة محتوى الرسالة بوضوح
+        print(f"
+[FINAL DEBUG] Received update:")
+        if update.message:
+            print(f"  - Chat ID: {update.message.chat.id}")
+            print(f"  - Text: {update.message.text}")
+            print(f"  - Content Type: {update.message.content_type}")
         
-        print(f"[DEBUG] ✅ تم تمرير التحديث بنجاح!")
+        # تمرير التحديث للبوت
+        bot.process_new_updates([update])
+        print(f"[FINAL DEBUG] ✅ Update processed successfully")
+        
         return "!", 200
     except Exception as e:
         import traceback
-        print(f"\n❌❌❌ [WEBHOOK ERROR] ❌❌❌")
-        print(f"الخطأ: {e}")
-        traceback.print_exc() # هيطبع مسار الخطأ بالتفصيل
+        print(f"
+❌ [FINAL ERROR] {e}")
+        traceback.print_exc()
         return "Error", 500
+
 
 @app.route("/")
 def webhook():

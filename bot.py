@@ -155,7 +155,9 @@ def callback_invite_friends(call):
         share_url = "https://t.me/share/url?url=" + quote(ref_link, safe='') + "&text=" + quote(share_text, safe='')
         markup.add(types.InlineKeyboardButton("📤 مشاركة", url=share_url))
         markup.add(types.InlineKeyboardButton("🔗 رابط الدعوة", url=ref_link))
-        bot.send_message(call.message.chat.id, share_text, parse_mode='Markdown', reply_markup=markup)
+        # Do not use Markdown parsing here: the promotional text uses **bold**
+        # markers, which Telegram's Markdown parser does not accept.
+        bot.send_message(call.message.chat.id, share_text, reply_markup=markup)
     except Exception as e:
         print(f"Invite callback error: {e}")
         bot.send_message(call.message.chat.id, "تعذر إنشاء رابط الدعوة الآن. حاول مرة أخرى لاحقاً.")

@@ -289,6 +289,14 @@ def debug_all(message):
 def callback_test_ping(call):
     bot.answer_callback_query(call.id, "🏓 البوت شغال والاتصال سليم 100%!", show_alert=True)
 
+
+@app.route('/routes')
+def show_routes():
+    routes = []
+    for rule in app.url_map.iter_rules():
+        routes.append(f"{rule.rule} -> {rule.endpoint}")
+    return "<br>".join(routes)
+
 # ===== إعداد Webhook =====
 WEBHOOK_URL = os.environ.get('RENDER_EXTERNAL_URL', 'https://zideot-usdt-2.onrender.com')
 
